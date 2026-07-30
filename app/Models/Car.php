@@ -23,7 +23,8 @@ class Car extends Model
         'city',
         'agency_name',
         'rating',
-        'is_available'
+        'is_available',
+        'year'
     ];
 
     /**

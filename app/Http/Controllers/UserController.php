@@ -19,7 +19,6 @@ class UserController extends Controller
             if (Auth::attempt($credentials)) {
                 $user = Auth::user();
 
-                // ✅ منع agency pending
                 if ($user->role === 'agency' && $user->status === 'pending') {
                     Auth::logout();
                     return response()->json(['message' => 'pending'], 403);
@@ -51,13 +50,10 @@ class UserController extends Controller
                 ->withCookie(cookie('auth_token', '', -1, '/', null, false, true))
                 ->withCookie(cookie('laravel_session', '', -1, '/', null, false, true))
                 ->withCookie(cookie('XSRF-TOKEN', '', -1, '/', null, false, false));
-        }
-
-    // app/Http/Controllers/UserController.php
+    }
 
     public function register(Request $request)
         {
-            // الـ Validation بنفس الطريقة الاحترافية
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
@@ -71,15 +67,13 @@ class UserController extends Controller
                 ], 422);
             }
 
-            // إنشاء المستخدم الجديد (AutoDrive Pro User)
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'role' => 'user', // Role d'origine
+                'role' => 'user',
             ]);
 
-            // إنشاء الـ Token (Sanctum)
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
@@ -104,7 +98,6 @@ class UserController extends Controller
                 ], 422);
             }
 
-            
             User::create([
                 'name'     => $request->name,
                 'email'    => $request->email,
@@ -119,39 +112,37 @@ class UserController extends Controller
             ], 201);
         }
 
-      
     public function updateProfile(Request $request)
     {
         $user = $request->user();
 
-        // 1. تعديل الـ Validation: الـ logo ولى ملف تصويرة
         $validated = $request->validate([
             'name'    => 'required|string|max:255',
+            'email'   => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
             'phone'   => 'nullable|string|max:20',
             'city'    => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
             'logo' => 'nullable|sometimes|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        $user->update(['name' => $validated['name']]);
-
-        // داتا البروفايل الأساسية
+       $updateData = ['name' => $validated['name']];
+        if (!empty($validated['email'])) {
+            $updateData['email'] = $validated['email'];
+        }
+        $user->update($updateData);
+        
         $profileData = [
             'phone'   => $validated['phone'],
             'city'    => $validated['city'],
             'address' => $validated['address'],
         ];
 
-        // 2. معالجة تحميل الصورة إيلا كانت ميفوطة
         if ($request->hasFile('logo')) {
-            // حفض التصويرة ف الـ folder: storage/app/public/logos
             $path = $request->file('logo')->store('logos', 'public');
             
-            // تحويل الـ Path لـ URL كامل يقدر الـ React يقراه نيشان
             $profileData['logo'] = asset('storage/' . $path);
         }
 
-        // 3. التحديث أو الإنشاء
         $user->profile()->updateOrCreate(
             ['user_id' => $user->id],
             $profileData
