@@ -4,7 +4,6 @@ import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import profileService from '../../services/profileService';
 export default function AgencyProfile() {
-  // كنجيبو الداتا و دالة التحديث من الـ Context
   const { currentUser, setCurrentUser } = useAuth();
   const { cars, orders } = useApp();
 
@@ -22,6 +21,7 @@ export default function AgencyProfile() {
   
   const [form, setForm] = useState({
     name: '',
+    email: '',
     phone: '',
     address: '',
     city: '',
@@ -32,15 +32,16 @@ export default function AgencyProfile() {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState(null);
 
-  // 🔄 هنا كنعمروا الـ Form بالداتا الحقيقية اللي جاية مفرقة بين الـ User والـ Profile
   useEffect(() => {
     if (currentUser) {
       setForm({
         name: currentUser.name || '',
+        email: currentUser.email || '',
         phone: currentUser.profile?.phone || '',
         address: currentUser.profile?.address || '',
         city: currentUser.profile?.city || '',
         logo: currentUser.profile?.logo || '',
+
       });
     }
   }, [currentUser]);
@@ -64,6 +65,7 @@ export default function AgencyProfile() {
       try {
         const formData = new FormData();
         formData.append('name', form.name);
+        formData.append('email', form.email);
         formData.append('phone', form.phone || '');
         formData.append('city', form.city || '');
         formData.append('address', form.address || '');
@@ -82,7 +84,7 @@ export default function AgencyProfile() {
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
       } catch (err) {
-        console.error("Validation errors:", err.response?.data?.errors); // ✅ زيد هاد السطر
+        // Profile update failed
         setError(err.response?.data?.message || "Impossible de mettre à jour le profil.");
       } finally {
         setLoading(false);
@@ -220,12 +222,28 @@ export default function AgencyProfile() {
                         value={form[f.name]}
                         onChange={handleChange}
                         placeholder={f.placeholder}
-                        required={f.name === 'name'} // الاسم ضروري ف السيستيم
+                        required={f.name === 'name'}
                         className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl pl-12 pr-4 py-4 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-600 focus:outline-none focus:border-orange-600 text-xs font-bold italic transition-all"
                       />
                     </div>
                   </div>
                 ))}
+                  <div className="space-y-2">
+                    <label className="text-slate-500 dark:text-gray-400 text-[10px] font-black uppercase tracking-widest italic ml-1">
+                        Email
+                    </label>
+                    <div className="relative group">
+                        <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-600 transition-colors" />
+                        <input
+                            name="email"
+                            type="email"
+                            value={form.email}
+                            onChange={handleChange}
+                            placeholder="agency@example.com"
+                            className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl pl-12 pr-4 py-4 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-600 text-xs font-bold italic transition-all"
+                        />
+                    </div>
+                  </div>
                 
                 {/* Full Width Address */}
                 <div className="md:col-span-2 space-y-2">
@@ -242,6 +260,8 @@ export default function AgencyProfile() {
                     />
                   </div>
                 </div>
+
+
               </div>
 
               {/* Logo Preview Section */}

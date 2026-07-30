@@ -42,18 +42,8 @@ const CarRow = ({ car, onDelete }) => (
     <td className="px-8 py-5">
       <p className="text-orange-600 font-black italic text-lg tracking-tighter">{car.price_per_day} <span className="text-[10px] uppercase">Mad</span></p>
     </td>
-    <td className="px-8 py-5">
-      <div className="flex items-center gap-1 text-yellow-500 font-black italic">
-        <Star size={14} fill="currentColor" /> {car.rating}
-      </div>
-    </td>
-    <td className="px-8 py-5">
-      {car.is_available ? (
-        <span className="inline-flex items-center gap-1.5 text-emerald-500 text-[10px] font-black italic uppercase tracking-wider bg-emerald-500/10 px-3 py-1 rounded-full"><CheckCircle size={12} /> Ready</span>
-      ) : (
-        <span className="inline-flex items-center gap-1.5 text-rose-500 text-[10px] font-black italic uppercase tracking-wider bg-rose-500/10 px-3 py-1 rounded-full"><XCircle size={12} /> On Rent</span>
-      )}
-    </td>
+ 
+
     <td className="px-8 py-5 text-right">
       <button onClick={onDelete} className="p-3 bg-rose-500/10 hover:bg-rose-600 text-rose-500 hover:text-white rounded-2xl transition-all duration-300">
         <Trash2 size={16} />
@@ -171,8 +161,6 @@ export default function AdminCars() {
                   <th className="text-left px-8 py-5 text-[10px] font-black italic uppercase tracking-[0.2em]">Provider</th>
                   <th className="text-left px-8 py-5 text-[10px] font-black italic uppercase tracking-[0.2em]">Category</th>
                   <th className="text-left px-8 py-5 text-[10px] font-black italic uppercase tracking-[0.2em]">Daily Rate</th>
-                  <th className="text-left px-8 py-5 text-[10px] font-black italic uppercase tracking-[0.2em]">Score</th>
-                  <th className="text-left px-8 py-5 text-[10px] font-black italic uppercase tracking-[0.2em]">Status</th>
                   <th className="text-right px-8 py-5 text-[10px] font-black italic uppercase tracking-[0.2em]">Action</th>
                 </tr>
               </thead>

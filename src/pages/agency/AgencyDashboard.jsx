@@ -6,7 +6,7 @@ import {
   PieChart, Pie, Cell, Legend
 } from 'recharts';
 import { useApp } from '../../context/AppContext';
-import { getAgencyDashboardStats } from '../../services/orderService'; // 📊 ربط الملف بالـ Service الحقيقي للي قادينا
+import { getAgencyDashboardStats } from '../../services/orderService';
 
 const COLORS = ['#10B981', '#3B82F6', '#EF4444', '#6366F1'];
 
@@ -20,27 +20,21 @@ export default function AgencyDashboard() {
     recentOrders: []
   });
 
-  // 🔄 جلب البيانات كاملة من الـ API عند تحميل الصفحة
-// 🔄 جلب البيانات كاملة مع التشخيص
-// 🔄 جلب البيانات كاملة من الـ API عند تحميل الصفحة
-useEffect(() => {
-  const fetchDashboardStats = async () => {
-    try {
-      setLoading(true);
-      console.log("🚀 غـادي نـصـيـفـطـو الـ Request لـلـ بـاكـيـنـد دابـا...");
-      const data = await getAgencyDashboardStats();
-      console.log("✅ الـ داتا وصـلـات بـسـلـام:", data);
-      setDashboardData(data);
-    } catch (error) {
-      console.error("❌ خـطـأ أثـنـاء جـلـب الـ داتا:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        setLoading(true);
+        const data = await getAgencyDashboardStats();
+        setDashboardData(data);
+      } catch (error) {
+        // Dashboard stats fetch failed
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // 💡 عيطنا عليها ديريكت بلا مانتساو currentUser حيت الباكيند كيقرا الـ Token بوحدو
-  fetchDashboardStats();
-}, []); // مصفوفة فارغة باش تخدم تزامناً مع تحميل الصفحة
+    fetchDashboardStats();
+  }, []);
 
   if (loading) {
     return (
@@ -50,7 +44,6 @@ useEffect(() => {
     );
   }
 
-  // مصفوفة الـ KPIs بعد ربطها بالبيانات الحقيقية وجعل كلاسات Tailwind كاملة ومكتوبة بنص صريح
   const kpiCards = [
     { label: 'Fleet Size', value: dashboardData.kpis.fleetSize, icon: Car, trend: 'Total Units', colorClass: 'bg-orange-600/5 text-orange-600' },
     { label: 'Total Orders', value: dashboardData.kpis.totalOrders, icon: ClipboardList, trend: 'All time', colorClass: 'bg-blue-600/5 text-blue-600' },
@@ -180,7 +173,6 @@ useEffect(() => {
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-white/5">
                   {dashboardData.recentOrders.map(order => {
-                    // 🛠️ تحديث الـ Mapping ليتناسب مع قيم الـ Database الحقيقية من Laravel
                     const statusMap = {
                       en_attente: { label: 'In Queue', class: 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20' },
                       accepte: { label: 'Confirmed', class: 'text-green-500 bg-green-500/10 border-green-500/20' },

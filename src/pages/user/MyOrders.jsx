@@ -37,40 +37,32 @@ const statusConfig = {
 export default function MyOrders() {
   const [myOrders, setMyOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth(); // غانحتاجو اليوزر فقط باش نتأكدو أنه مـكونيكطي
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchOrdersDirectly = async () => {
       try {
-        console.log("MyOrders: انطلاق الـ Request المباشرة للباكيند...");
         const response = await orderService.getUserOrders();
-        console.log("MyOrders: البيانات الراجعة:", response);
-
         if (response && response.success && Array.isArray(response.orders)) {
           setMyOrders(response.orders);
         } else if (Array.isArray(response)) {
           setMyOrders(response);
         }
       } catch (error) {
-        console.error("Erreur lors du chargement des commandes:", error);
+        // Order loading failed
       } finally {
         setLoading(false);
       }
     };
-
     fetchOrdersDirectly();
-  }, [user]); // غاتعاود تخدم إيلا الـ user تلوّد
+  }, [user]);
 
-  // حساب عدد الطلبات لكل حالة
   const counts = {
     en_attente: myOrders.filter(o => o.status === 'en_attente' || o.status === 'pending').length,
     accepte: myOrders.filter(o => o.status === 'accepte' || o.status === 'accepted').length,
     refuse: myOrders.filter(o => o.status === 'refuse' || o.status === 'refused').length,
     completed: myOrders.filter(o => o.status === 'completed').length,
   };
-
-  // زيد هاد الـ function فوق الـ return
-
 
   if (loading) {
     return (
@@ -154,7 +146,6 @@ export default function MyOrders() {
                       <img src={image} alt={`${brand} ${model}`} className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-110" />
                       <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent lg:hidden" />
                       
-                      {/* بادج الحالة ف الموبايل */}
                       <div className="absolute top-8 left-8 lg:hidden">
                          <div className={`px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border backdrop-blur-xl ${cfg.bg} ${cfg.color} ${cfg.border}`}>
                            {cfg.label}
@@ -162,15 +153,9 @@ export default function MyOrders() {
                       </div>
                     </div>
 
-                    {/* تفاصيل الطلب */}
                     <div className="p-12 flex-1 flex flex-col justify-between">
                       <div className="flex justify-between items-start">
                         <div className="space-y-4">
-                          <div className="flex items-center gap-3">
-                             <span className="text-[10px] font-black text-orange-600 bg-orange-600/10 px-3 py-1 rounded-lg italic">
-                               Commande {order.id}
-                             </span>
-                          </div>
                           <h3 className="text-4xl font-black uppercase italic tracking-tighter leading-none text-slate-900 dark:text-white">
                             {brand} <span className="text-slate-400 dark:text-gray-500 not-italic font-medium">{model}</span>
                           </h3>
@@ -180,13 +165,11 @@ export default function MyOrders() {
                           </div>
                         </div>
                         
-                        {/* بادج الحالة ف الشاشات الكبيرة */}
                         <div className={`hidden lg:block px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border transition-all duration-500 group-hover:shadow-lg ${cfg.bg} ${cfg.color} ${cfg.border}`}>
                           {cfg.label}
                         </div>
                       </div>
 
-                      {/* الجزء السفلي */}
                       <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-10 items-end pt-10 border-t border-slate-100 dark:border-white/5">
                         <div className="flex items-center gap-5">
                           <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-white/5 flex items-center justify-center text-slate-400">
@@ -212,7 +195,7 @@ export default function MyOrders() {
                         {(order.status === 'accepte' || order.status === 'accepted') && (
                           <button
                               onClick={() => orderService.handleDownloadPdf(order.id)}
-                              className="flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-orange-600/20"
+                              className="cursor-pointer flex items-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg shadow-orange-600/20"
                           >
                               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>

@@ -11,7 +11,7 @@ export default function CarDetail() {
   const { currentRole } = useAuth();
   const { cars, addToCart } = useApp();
   
-  // مقارنة بـ == حيت الـ id من الـ URL كيكون string ومن Laravel كيكون number
+
   const car = cars.find(c => c.id == id);
 
   const today = new Date().toISOString().split('T')[0];
@@ -115,12 +115,12 @@ export default function CarDetail() {
                   <div className="flex flex-wrap items-center gap-6">
                     <div className="flex items-center gap-2 text-slate-400">
                       <Building2 size={16} className="text-orange-600" />
-                      <span className="text-[11px] font-black uppercase tracking-widest italic">{car.agency_name || 'AutoDrive'}</span>
+                      <span className="text-[11px] font-black uppercase tracking-widest italic">{car.agency_name }</span>
                     </div>
-                    <div className="flex items-center gap-2 text-yellow-500">
-                      <Star size={18} fill="currentColor" />
-                      <span className="font-black text-lg">{car.rating || 4.8}</span>
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <span className="text-[11px] font-black uppercase tracking-widest italic">{car.city }</span>
                     </div>
+
                   </div>
                 </div>
                 

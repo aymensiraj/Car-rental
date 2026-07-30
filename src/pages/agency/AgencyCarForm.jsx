@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Plus, Car, Camera, CheckCircle2, Loader2 } from 'lucide-react';
-import { carService } from '../../services/carService'; // 🏢 الـ Service الجديد ديالنا
+import { carService } from '../../services/carService';
 
 const CATEGORIES = ['Économique', 'SUV', 'Luxe', 'Électrique'];
 const TRANSMISSIONS = ['Automatique', 'Manuelle'];
@@ -21,27 +21,24 @@ export default function AgencyCarForm() {
   const isEdit = Boolean(id);
 
   const [form, setForm] = useState(defaultForm);
-  const [preview, setPreview] = useState(null); // لعرض التصويرة قبل الرفع
+  const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // 🔄 جلب معلومات السيارة إيلا كان تعديل (Edit Mode)
   useEffect(() => {
     if (isEdit) {
       const fetchCarData = async () => {
         try {
           setLoading(true);
-          const response = await carService.getCar(id); // جلب السيارة من الباكيند
+          const response = await carService.getCar(id);
           const car = response.car;
-          
           setForm({
             ...car,
-            // إيلا كانت الـ features مصفوفة جاية من الباكيند، نردوها نص مفرق بـ فواصل
             features: Array.isArray(car.features) ? car.features.join(', ') : car.features || '',
           });
-          setPreview(car.image); // عرض الرابط د التصويرة لي ديجا كاين ف الباكيند
+          setPreview(car.image);
         } catch (error) {
-          console.error("Error fetching car data:", error);
+          // Car data fetch failed
         } finally {
           setLoading(false);
         }
@@ -57,7 +54,7 @@ export default function AgencyCarForm() {
       const file = files[0];
       if (file) {
         setForm(prev => ({ ...prev, image: file }));
-        setPreview(URL.createObjectURL(file)); // كيعطيك رابط مؤقت تشوف بيه التصويرة ف البلاصة
+        setPreview(URL.createObjectURL(file));
       }
     } else {
       setForm(prev => ({
@@ -73,16 +70,14 @@ export default function AgencyCarForm() {
       e.preventDefault();
       setSaved(false);
 
-      // 📦 بناء الـ FormData لإرسال الملفات والنصوص معاً
       const formData = new FormData();
       
-      // 1. تمرير الحقول الأساسية مع ضبط المسميات لتطابق الـ Migration
       formData.append('brand', form.brand);
       formData.append('model', form.model);
+      formData.append('year', Number(form.year));
       formData.append('seats', Number(form.seats));
-      formData.append('price_per_day', Number(form.price)); // 🔥 تحويل price لـ price_per_day
+      formData.append('price_per_day', Number(form.price));
 
-      // 2. تحويل الـ Enums من الفرنسية والحروف الكبيرة لـ الإنجليزية والحروف الصغيرة
       const categoryMap = { 'Économique': 'economique', 'SUV': 'suv', 'Luxe': 'luxe', 'Électrique': 'electrique' };
       formData.append('category', categoryMap[form.category] || 'economique');
 
@@ -90,20 +85,15 @@ export default function AgencyCarForm() {
       formData.append('transmission', transmissionMap[form.transmission] || 'manual');
 
       const fuelMap = { 'Essence': 'essence', 'Diesel': 'diesel', 'Électrique': 'electric', 'Hybride': 'essence' };
-      formData.append('fuel_type', fuelMap[form.fuel] || 'essence'); // 🔥 تحويل fuel لـ fuel_type
+      formData.append('fuel_type', fuelMap[form.fuel] || 'essence');
 
-      // 3. تحويل حالة التوفر
       formData.append('is_available', form.available ? 1 : 0);
-
-      // 4. التعامل مع الصورة فقط إيلا كانت ملف جديد
       if (form.image instanceof File) {
         formData.append('image', form.image);
       }
 
-      // 5. حقول إضافية (رد البال للملاحظة لّي لتحت بخصوص الـ Database)
       formData.append('description', form.description || '');
 
-      // 🛠️ حيلة Laravel للتعامل مع الـ multipart ف الـ PUT (عند التعديل)
       if (isEdit) {
         formData.append('_method', 'PUT');
       }
@@ -117,14 +107,14 @@ export default function AgencyCarForm() {
         
         setSaved(true);
         setTimeout(() => navigate('/agency/cars'), 1200);
-      } catch (error) {
-        console.error("Error saving car:", error);
-        
-        // طباعة أخطاء الـ Validation ف الـ Console ديريكت إيلا بقات شي حاجة
-        if (error.response && error.response.data && error.response.data.errors) {
-          console.table(error.response.data.errors); 
+        } catch (error) {
+            if (error.response?.status === 403) {
+                alert("Veuillez compléter votre profil agence avant d'ajouter une voiture.");
+                navigate('/agency/profile');
+                return;
+            }
+            console.log("Error:", error.response?.data);
         }
-      }
     };
 
   const inputStyle = "w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-600 focus:border-transparent transition-all duration-300 font-bold italic uppercase text-xs";
@@ -158,15 +148,6 @@ export default function AgencyCarForm() {
             </h1>
           </div>
           
-          <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-2xl">
-            <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-600/20">
-              <Car size={24} className="text-white" />
-            </div>
-            <div>
-              <p className="text-[9px] text-slate-400 dark:text-gray-500 font-black uppercase tracking-widest leading-none mb-1">Status agence</p>
-              <p className="text-sm font-black dark:text-white uppercase italic tracking-tighter">AutoDrive Pro</p>
-            </div>
-          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -259,14 +240,13 @@ export default function AgencyCarForm() {
                     </div>
                   )}
                 </div>
-                {/* الإدخال الحقيقي مخفي ومربوط بالـ label */}
                 <input 
                   type="file" 
                   name="image" 
                   accept="image/*" 
                   onChange={handleChange} 
                   className="hidden" 
-                  required={!isEdit} // إجباري فقط في حالة سيارة جديدة
+                  required={!isEdit}
                 />
               </label>
             </div>

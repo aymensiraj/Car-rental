@@ -8,7 +8,6 @@ export const AppProvider = ({ children }) => {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(false);
 
- 
   const [cart, setCart] = useState(() => {
     const savedCart = Cookies.get('autodrive_cart');
     return savedCart ? JSON.parse(savedCart) : [];
@@ -18,33 +17,29 @@ export const AppProvider = ({ children }) => {
     Cookies.set('autodrive_cart', JSON.stringify(cart), { expires: 7, secure: true, sameSite: 'strict' });
   }, [cart]);
 
-  
   useEffect(() => {
-const fetchCars = async () => {
-  setLoading(true);
-  try {
-    const data = await carService.getAllCars();
-
-    const normalizeCarImage = (car) => ({
-      ...car,
-      image_url: car.image_url ||
-        (car.image ? `http://localhost:8000/storage/${car.image}` : '/placeholder-car.jpg')
-    });
-
-    if (Array.isArray(data)) {
-      setCars(data.map(normalizeCarImage));
-    } else if (data && Array.isArray(data.cars)) {
-      setCars(data.cars.map(normalizeCarImage));
-    } else if (data && Array.isArray(data.data)) {
-      setCars(data.data.map(normalizeCarImage));
-    }
-  } catch (error) {
-    console.error("Impossible de récupérer les voitures:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+    const fetchCars = async () => {
+      setLoading(true);
+      try {
+        const data = await carService.getAllCars();
+        const normalizeCarImage = (car) => ({
+          ...car,
+          image_url: car.image_url ||
+            (car.image ? `http://localhost:8000/storage/${car.image}` : '/placeholder-car.jpg')
+        });
+        if (Array.isArray(data)) {
+          setCars(data.map(normalizeCarImage));
+        } else if (data && Array.isArray(data.cars)) {
+          setCars(data.cars.map(normalizeCarImage));
+        } else if (data && Array.isArray(data.data)) {
+          setCars(data.data.map(normalizeCarImage));
+        }
+      } catch (error) {
+        // Car loading failed
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchCars();
   }, []); 
 

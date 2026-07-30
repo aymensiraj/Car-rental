@@ -42,7 +42,6 @@ export const AuthProvider = ({ children }) => {
             }
             return { success: false, message: "Données de réponse invalides" };
         } catch (error) {
-            // ✅ pending agency
             if (error.response?.status === 403 && error.response?.data?.message === 'pending') {
                 return { success: false, pending: true };
             }
@@ -71,7 +70,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // ✅ registerAgency — بلا cookies ولا token
     const registerAgency = async (name, email, password, password_confirmation) => {
         try {
             await api.get('http://localhost:8000/sanctum/csrf-cookie');

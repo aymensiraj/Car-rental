@@ -2,14 +2,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Save, Car, Camera, CheckCircle2, Loader2 } from 'lucide-react';
 import { carService } from '../../services/carService.js'; 
-import { useAuth } from '../../context/AuthContext'; // 🔥 زدنا الـ Auth هنا باش نجبدو معلومات الوكالة
+import { useAuth } from '../../context/AuthContext';
 
 const CATEGORIES = ['Économique', 'SUV', 'Luxe', 'Électrique'];
 const TRANSMISSIONS = ['Automatique', 'Manuelle'];
 const FUELS = ['Essence', 'Diesel', 'Électrique', 'Hybride'];
 const COLORS = ['Noir', 'Blanc', 'Gris', 'Bleu', 'Rouge', 'Beige', 'Vert', 'Argent'];
 
-// 🔥 حط هنا الـ URL ديال الباكيند Laravel باش الصور القدام يطالعو ف الـ Preview
 const IMAGE_BASE_URL = 'http://localhost:8000/storage/'; 
 
 const defaultForm = {
@@ -22,7 +21,7 @@ const defaultForm = {
 export default function AgencyUpdateCarForm() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { currentUser } = useAuth(); // 🔥 كنجيبو الـ user الحالي لّي ملوكي (الوكالة)
+  const { currentUser } = useAuth();
 
   const [form, setForm] = useState(defaultForm);
   const [preview, setPreview] = useState(null); 
@@ -35,7 +34,6 @@ export default function AgencyUpdateCarForm() {
         setLoading(true);
         const response = await carService.getCar(id); 
         
-        // تأكد واش الباكيند كيرجع الداتا فـ response.car أو فـ response نيشان
         const car = response.car ? response.car : response; 
         
         const reverseCategoryMap = { 'economique': 'Économique', 'suv': 'SUV', 'luxe': 'Luxe', 'electrique': 'Électrique' };
@@ -47,7 +45,7 @@ export default function AgencyUpdateCarForm() {
           model: car.model || '',
           year: car.year || 2024,
           category: reverseCategoryMap[car.category] || 'Économique',
-          price: car.price_per_day || 300, // الـ price_per_day كيرجع لـ price ف الـ Form state
+          price: car.price_per_day || 300,
           image: car.image || null,
           color: car.color || 'Blanc',
           seats: car.seats || 5,
@@ -59,14 +57,12 @@ export default function AgencyUpdateCarForm() {
           features: Array.isArray(car.features) ? car.features.join(', ') : car.features || '',
         });
 
-        // 🔥 إصلاح الـ Preview: نلصقو الـ Base URL مع سمية الصورة لّي جاية من الباكيند
         if (car.image && typeof car.image === 'string') {
-          // إلا كانت الصورة ديجا فيها http بلا ما نلصقو الـ Base URL
           const fullImageUrl = car.image.startsWith('http') ? car.image : `${IMAGE_BASE_URL}${car.image}`;
           setPreview(fullImageUrl); 
         }
       } catch (error) {
-        console.error("Error fetching car data:", error);
+        // Car data fetch failed
       } finally {
         setLoading(false);
       }
@@ -104,7 +100,6 @@ export default function AgencyUpdateCarForm() {
     
     formData.append('_method', 'PUT');  
     
-    // الحقول الأساسية
     formData.append('brand', form.brand);
     formData.append('model', form.model);
     formData.append('year', Number(form.year));
@@ -112,10 +107,8 @@ export default function AgencyUpdateCarForm() {
     formData.append('mileage', Number(form.mileage));
     formData.append('color', form.color);
     
-    // إصلاح الـ price_per_day لّي طالبو الـ Laravel ف الـ Validation
     formData.append('price_per_day', Number(form.price)); 
 
-    // المابينق للـ Enums
     const categoryMap = { 'Économique': 'economique', 'SUV': 'suv', 'Luxe': 'luxe', 'Électrique': 'electrique' };
     formData.append('category', categoryMap[form.category] || 'economique');
 
@@ -125,7 +118,6 @@ export default function AgencyUpdateCarForm() {
     const fuelMap = { 'Essence': 'essence', 'Diesel': 'diesel', 'Électrique': 'electric', 'Hybride': 'hybride' };
     formData.append('fuel_type', fuelMap[form.fuel] || 'essence'); 
 
-    // إصلاح الـ city والـ agency_name لّي كيديرو خطأ 422 ف الـ Console
     formData.append('city', currentUser?.city || 'Casablanca'); 
     formData.append('agency_name', currentUser?.name || 'AutoDrive Agency');
 
@@ -133,25 +125,17 @@ export default function AgencyUpdateCarForm() {
     formData.append('description', form.description || '');
     formData.append('features', form.features || '');
 
-    // ✅ زيد هاد السطر فـ أول الـ formData
-    // كنصيفطو الصورة الجديدة غي يلا ترفعات (نوع File)
     if (form.image instanceof File) {
       formData.append('image', form.image);
     }
 
-    // ❌ حيدنا هاد السطر حيت مابقاش صالح لينا:
-    // formData.append('_method', 'PUT'); ❌
-
     try {
       setLoading(true);
-      await carService.updateCar(id, formData); // هادي ديجا فيها api.put فـ carService.js
+      await carService.updateCar(id, formData);
       setSaved(true);
       setTimeout(() => navigate('/agency/cars'), 1200);
     } catch (error) {
-      console.error("Error updating car:", error);
-      if (error.response?.data?.errors) {
-        console.table(error.response.data.errors); 
-      }
+      // Car update failed
     } finally {
       setLoading(false);
     }
@@ -188,15 +172,6 @@ export default function AgencyUpdateCarForm() {
             </h1>
           </div>
           
-          <div className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-2xl">
-            <div className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-600/20">
-              <Car size={24} className="text-white" />
-            </div>
-            <div>
-              <p className="text-[9px] text-slate-400 dark:text-gray-500 font-black uppercase tracking-widest leading-none mb-1">Status agence</p>
-              <p className="text-sm font-black dark:text-white uppercase italic tracking-tighter">AutoDrive Pro</p>
-            </div>
-          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-8">

@@ -13,7 +13,6 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      // had '@' kat-khallik t-importi b7al: import X from '@/components/X'
       "@": path.resolve(new URL('./src', import.meta.url).pathname),
     },
   },

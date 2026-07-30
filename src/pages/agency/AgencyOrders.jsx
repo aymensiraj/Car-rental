@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, Clock, Calendar, User, Hash, Tag, Loader2 } from 'lucide-react';
-import { orderService } from '../../services/orderService'; // 🏢 الـ Service الجديد
+import { orderService } from '../../services/orderService';
 
 const statusConfig = {
   en_attente: { label: 'In Queue', icon: Clock, badge: 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' },
@@ -17,7 +17,6 @@ export default function AgencyOrders() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
 
-  // 🔄 جيب الطلبات د الوكالة من الباكيند نيشان
   const fetchAgencyOrders = async () => {
     try {
       setLoading(true);
@@ -26,7 +25,7 @@ export default function AgencyOrders() {
         setMyOrders(data.orders);
       }
     } catch (error) {
-      console.error("Error fetching agency orders:", error);
+      // Order fetch failed
     } finally {
       setLoading(false);
     }
@@ -36,20 +35,17 @@ export default function AgencyOrders() {
     fetchAgencyOrders();
   }, []);
 
-  // 🏢 ميثود قبول الطلب
   const handleAccept = async (orderId) => {
     try {
       const data = await orderService.acceptOrder(orderId);
       if (data.success) {
-        // تحديث الحالة ف الـ State بلا ما نـعاودو نـشـارجيو الـ صفحة كاملو
         setMyOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'accepte' } : o));
       }
     } catch (error) {
-      console.error("Error accepting order:", error);
+      // Accept order failed
     }
   };
 
-  // 🏢 ميثود رفض الطلب
   const handleRefuse = async (orderId) => {
     try {
       const data = await orderService.refuseOrder(orderId);
@@ -57,11 +53,11 @@ export default function AgencyOrders() {
         setMyOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'refuse' } : o));
       }
     } catch (error) {
-      console.error("Error refusing order:", error);
+      // Refuse order failed
     }
   };
 
-  // 🎛️ الـ فـلـتـرة الذكية
+
   const filtered = filter === 'all' 
     ? myOrders 
     : myOrders.filter(o => {
@@ -71,7 +67,6 @@ export default function AgencyOrders() {
         return o.status === filter;
       });
 
-  // الـ عدادات الفوقانية
   const counts = {
     all: myOrders.length,
     pending: myOrders.filter(o => o.status === 'pending' || o.status === 'en_attente').length,
@@ -143,7 +138,6 @@ export default function AgencyOrders() {
               .sort((a, b) => new Date(b.created_at || b.createdAt).getTime() - new Date(a.created_at || a.createdAt).getTime())
               .map(order => {
                 const cfg = statusConfig[order.status] || statusConfig.en_attente;
-                // 💡 هنا دمجنا قراءة البيانات سواء من العلاقة مع الـ car ف الباكيند أو مباشرة
                 const carInfo = order.car || {};
                 const clientInfo = order.user || {};
 

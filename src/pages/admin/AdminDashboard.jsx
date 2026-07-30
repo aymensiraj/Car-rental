@@ -104,8 +104,6 @@ export default function AdminDashboard() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        
-        // العيـاط على السيرفيس نيشان بلا axios هنا
         const data = await adminService.getDashboardStats();
         setStats(data);
         
@@ -235,9 +233,11 @@ export default function AdminDashboard() {
               {eliteAgencies.slice(0, 3).map((ag, i) => (
                 <div key={ag.id} className="flex items-center gap-4 bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-3xl p-4 hover:border-orange-600/30 transition-all">
                   <div className="relative">
-                    <div className="absolute z-10 -top-2 -left-2 w-6 h-6 bg-orange-600 text-white flex items-center justify-center rounded-lg text-[10px] font-black italic">
+                    <div className="absolute z-10 -top-2 -left-2 w-6 h-6 bg-red-600 text-white flex items-center justify-center rounded-lg text-[10px] font-black italic">
                       {i + 1}
                     </div>
+                    <div>
+                      {ag.logo ? (
                     <img 
                       src={
                         ag.logo
@@ -249,6 +249,12 @@ export default function AdminDashboard() {
                       alt={ag.name} 
                       className="w-14 h-14 rounded-2xl object-cover grayscale hover:grayscale-0 transition-all shadow-sm" 
                     />
+                      ) : (
+                      <div className="w-12 h-12 bg-orange-600 rounded-2xl flex items-center justify-center text-white font-black italic text-lg shadow-lg">
+                        {ag.name?.charAt(0) || 'A'}
+                      </div>
+                      )}
+                    </div>
                   </div>
                   <div className="flex-1">
                     <p className="font-black italic uppercase tracking-tighter text-lg">{ag.name}</p>
@@ -256,10 +262,7 @@ export default function AdminDashboard() {
                       {ag.city || "Casablanca"} • {ag.cars_count || 0} Units
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-orange-600 font-black italic text-lg">★ {ag.rating || "5.0"}</p>
-                    <p className="text-slate-400 dark:text-gray-600 font-black italic uppercase text-[8px]">Partner Score</p>
-                  </div>
+
                 </div>
               ))}
               {eliteAgencies.length === 0 && (

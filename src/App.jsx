@@ -3,10 +3,12 @@ import { AppProvider } from './context/AppContext';
 import { AuthProvider , useAuth} from './context/AuthContext';
 
 import Navbar from './components/Navbar';
+import AIAssistant from './components/AIAssistant';
 
 // Auth
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import PendingPage from './pages/auth/PendingPage';
 
 // User
 import Home from './pages/user/Home';
@@ -29,7 +31,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminCars from './pages/admin/AdminCars';
 import AdminAccounts from './pages/admin/AdminAccounts';
 
-// ─── Protected Route (Converted to JS) ───────────────────────────────────────
+
 
 function ProtectedRoute({ children, allowedRoles }) {
   const { currentRole } = useAuth();
@@ -40,8 +42,6 @@ function ProtectedRoute({ children, allowedRoles }) {
   return <>{children}</>;
 }
 
-// ─── Layout (Converted to JS) ────────────────────────────────────────────────
-
 function Layout({ children }) {
   return (
     <div className="min-h-screen bg-gray-950">
@@ -51,8 +51,6 @@ function Layout({ children }) {
   );
 }
 
-// ─── App Router ───────────────────────────────────────────────────────────────
-
 function AppRoutes() {
   const { currentRole } = useAuth();
 
@@ -61,19 +59,17 @@ function AppRoutes() {
       {/* Public */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-
+      <Route path="/pending" element={<PendingPage />} />
       {/* User Routes */}
       <Route path="/" element={
-          <Layout><Home /></Layout>
+      currentRole === 'agency' 
+        ? <Navigate to="/agency/dashboard" replace />
+        : currentRole === 'admin'
+        ? <Navigate to="/admin/dashboard" replace />
+        : <Layout><Home /></Layout>
       } />
-      <Route path="/store" element={
-       
-          <Layout><Store /></Layout>
-      } />
-      <Route path="/car/:id" element={
-       
-          <Layout><CarDetail /></Layout>
-      } />
+      <Route path="/store" element={<Layout><Store /></Layout>} />
+      <Route path="/car/:id" element={<Layout><CarDetail /></Layout>} />
       <Route path="/cart" element={
         <ProtectedRoute allowedRoles={['user']}>
           <Layout><Cart /></Layout>
@@ -110,12 +106,6 @@ function AppRoutes() {
       <Route path="/agency/cars/edit/:id" element={
         <ProtectedRoute allowedRoles={['agency']}>
           <Layout><AgencyUpdateCarForm /></Layout>
-        </ProtectedRoute>
-      } />
-
-      <Route path="/agency/cars/edit/:id" element={
-        <ProtectedRoute allowedRoles={['agency']}>
-          <Layout><AgencyCarForm /></Layout>
         </ProtectedRoute>
       } />
       <Route path="/agency/orders" element={
@@ -159,7 +149,7 @@ function AppRoutes() {
   );
 }
 
-// ─── Root ─────────────────────────────────────────────────────────────────────
+
 
 export default function App() {
   return (
@@ -167,6 +157,7 @@ export default function App() {
       <AuthProvider>
          <AppProvider>
             <AppRoutes />
+            <AIAssistant />
          </AppProvider>
       </AuthProvider>
     </BrowserRouter>

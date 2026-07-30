@@ -12,9 +12,17 @@ const UserRow = ({ user, onDelete }) => (
   <tr className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors group">
     <td className="px-8 py-6">
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-orange-600 rounded-2xl flex items-center justify-center text-white font-black italic text-lg shadow-lg shadow-orange-600/20 group-hover:rotate-6 transition-transform">
-          {user.name?.charAt(0) || 'U'}
-        </div>
+        {user.profile?.logo ? (
+          <img
+            src={user.profile.logo.startsWith('http') ? user.profile.logo : `http://localhost:8000/storage/${user.profile.logo}`}
+            alt={user.name}
+            className="w-12 h-12 rounded-2xl object-cover border border-slate-200 dark:border-white/10 shadow-md"
+          />
+        ) : (
+          <div className="w-12 h-12 bg-orange-600 rounded-2xl flex items-center justify-center text-white font-black italic text-lg shadow-lg shadow-orange-600/20 group-hover:rotate-6 transition-transform">
+            {user.name?.charAt(0) || 'U'}
+          </div>
+        )}
         <div>
           <p className="text-slate-900 dark:text-white font-black italic uppercase tracking-tighter text-sm">{user.name}</p>
           <span className="flex items-center gap-1 text-orange-600 text-[10px] font-black uppercase tracking-widest italic">
@@ -132,7 +140,7 @@ export default function AdminAccounts() {
         setAgencies(agenciesData.active);
         setPendingAgencies(agenciesData.pending);
       } catch (err) {
-        console.error("Error:", err.response);
+        // Failed to load data
         setError("Impossible de charger les données depuis le serveur.");
       } finally {
         setLoading(false);

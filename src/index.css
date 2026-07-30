@@ -4,7 +4,6 @@
 
 @layer base {
   body {
-    /* Light Mode: Gris sghir + Blue tint */
     @apply bg-[#f8fafc] text-slate-900 transition-colors duration-500;
   }
 }

@@ -20,7 +20,6 @@ export default function Login() {
     const result = await login(email, password);
     setLoading(false);
 
-    // ✅ agency pending
     if (result?.pending) {
       navigate('/pending');
       return;

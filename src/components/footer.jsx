@@ -16,7 +16,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20 pb-16 border-b border-slate-200 dark:border-white/5">
           <div className="space-y-6">
              <div className="text-3xl font-black tracking-tighter italic text-slate-900 dark:text-white uppercase">
-                AUTO<span className="text-orange-600">.</span>DRIVE
+                CAR<span className="text-orange-600">.</span>RENTAL
             </div>
             <p className="text-slate-500 dark:text-gray-400 max-w-sm font-medium leading-relaxed">
               L'excellence du tuning et de la location premium à Casablanca. Libérez la puissance brute.
@@ -90,7 +90,7 @@ export default function Footer() {
         {/* BOTTOM PART */}
         <div className="pt-10 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">
-            © 2026 AUTO.DRIVE — RÉALISÉ PAR <span className="text-slate-900 dark:text-white underline decoration-orange-600 decoration-2 italic">AYMEN</span>
+            © 2026 CAR.RENTAL — RÉALISÉ PAR <span className="text-slate-900 dark:text-white underline decoration-orange-600 decoration-2 italic">AYMEN</span>
           </p>
           <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500">
             <a href="#" className="hover:text-orange-600 transition-colors">Politique</a>

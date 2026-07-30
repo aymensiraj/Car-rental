@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User, Phone, MapPin, Home, Camera, Save, CheckCircle2, Loader2, ArrowLeft } from 'lucide-react';
+import { User, Phone, MapPin, Home, Camera, Save, CheckCircle2, Loader2, ArrowLeft, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import profileService from '../../services/profileService';
@@ -15,6 +15,7 @@ export default function UserProfile() {
 
   const [form, setForm] = useState({
     name: '',
+    email: '',
     phone: '',
     city: '',
     address: '',
@@ -24,12 +25,12 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  // ملا الـ form من الـ currentUser
   useEffect(() => {
     if (currentUser) {
       const profile = currentUser.profile || {};
       setForm({
         name: currentUser.name || '',
+        email: currentUser.email || '',
         phone: profile.phone || '',
         city: profile.city || '',
         address: profile.address || '',
@@ -66,6 +67,7 @@ export default function UserProfile() {
     try {
       const formData = new FormData();
       formData.append('name', form.name);
+      formData.append('email', form.email);
       formData.append('phone', form.phone || '');
       formData.append('city', form.city || '');
       formData.append('address', form.address || '');
@@ -82,7 +84,7 @@ export default function UserProfile() {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (error) {
-      console.error("Error updating profile:", error);
+      // Profile update failed
     } finally {
       setLoading(false);
     }
@@ -192,13 +194,13 @@ export default function UserProfile() {
               <div className="flex items-center gap-3 mb-6 border-l-4 border-slate-300 dark:border-white/20 pl-4">
                 <h2 className="text-xl font-black uppercase italic tracking-tight text-slate-900 dark:text-white">Sécurité</h2>
               </div>
-              <div>
-                <label className={labelStyle}>Adresse Email</label>
-                <input type="email" value={currentUser?.email || ''} disabled
-                  className={`${inputStyle} opacity-50 cursor-not-allowed`} />
-                <p className="text-[9px] text-slate-400 mt-2 ml-1 font-bold uppercase tracking-wider italic">
-                  L'email ne peut pas être modifié
-                </p>
+              <div className="sm:col-span-2">
+                  <label className={labelStyle}>Adresse Email</label>
+                  <div className="relative">
+                      <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-600" />
+                      <input name="email" type="email" value={form.email} onChange={handleChange}
+                          className={`${inputStyle} pl-10`} />
+                  </div>
               </div>
             </div>
           </div>

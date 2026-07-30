@@ -25,14 +25,7 @@ export default function Cart() {
   }, 0);
 
   const handleSubmit = async () => {
-    
     const userRole = currentRole || currentUser?.role;
-
-   
-    console.log("=== DEBUG AUTH IN CART ===");
-    console.log("User الحالي:", currentUser);
-    console.log("الـ Role الحالي:", userRole);
-
     if (!currentUser) {
       alert("Veuillez vous connecter pour continuer.");
       return;
@@ -47,27 +40,21 @@ export default function Cart() {
     setError('');
 
     try {
-      // الـ Loop على السيارات ونصيفطوهم لـ Laravel
       for (const item of cart) {
         const orderData = {
           car_id: item.car.id,
           start_date: item.startDate,
           end_date: item.endDate,
         };
-
         await orderService.createOrder(orderData);
       }
-
       clearCart();
       setSubmitted(true);
-      
       setTimeout(() => {
         setSubmitted(false);
-        navigate('/my-orders'); 
+        navigate('/my-orders');
       }, 2000);
-
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.message || "Une erreur est survenue lors de la validation de votre commande.");
     } finally {
       setLoading(false);

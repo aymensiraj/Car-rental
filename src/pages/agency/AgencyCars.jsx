@@ -3,16 +3,13 @@ import { Link } from 'react-router-dom';
 import { Plus, Edit2, Trash2, Car, Loader2 } from 'lucide-react';
 import { carService } from '../../services/carService'; 
 
-// 💡 دالة كتقاد رابط التصويرة بـ شكل صحيح على حساب واش جاية من الـ Seeder ولا مرفعوعة ف الـ Storage
 const getCarImage = (imagePath) => {
   if (!imagePath) return 'https://via.placeholder.com/400x250?text=No+Image';
   
-  // إيلا كان الرابط ديجا كامل (جاي من Seeder بـ http أو https)
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
   
-  // إيلا كانت تصويرة ملوحة ومرفوعة ف الـ local storage ديال لاراڤيل
   return `http://localhost:8000/storage/${imagePath}`;
 };
 
@@ -21,16 +18,14 @@ export default function AgencyCars() {
   const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState(null);
 
-  // 🔄 جيب السيارات د الوكالة عند تحميل الصفحة
   const fetchCars = async () => {
     try {
       setLoading(true);
       const data = await carService.getAgencyCars();
-      // 💡 بما أن الـ Backend كيرجع Array نيشان، كنحطو data مباشرة
+      // Handle both direct array and nested data.cars response from backend
       setAgencyCars(Array.isArray(data) ? data : data.cars || []);
     } catch (error) {
-      console.error("Error fetching cars:", error);
-      setAgencyCars([]); // حماية إضافية باش ما يوقعش Crash
+      setAgencyCars([]);
     } finally {
       setLoading(false);
     }
@@ -40,14 +35,13 @@ export default function AgencyCars() {
     fetchCars();
   }, []);
 
-  // 🗑️ حذف سيارة
   const handleDelete = async (id) => {
     try {
       await carService.deleteCar(id);
       setAgencyCars(prev => prev.filter(car => car.id !== id));
       setConfirmDelete(null);
     } catch (error) {
-      console.error("Error deleting car:", error);
+      // Error handled silently
     }
   };
 
@@ -62,8 +56,6 @@ export default function AgencyCars() {
   return (
     <div className="min-h-screen bg-white dark:bg-[#050505] transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        
-        {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <div className="flex items-center gap-2 mb-4">
@@ -86,7 +78,6 @@ export default function AgencyCars() {
           </Link>
         </div>
 
-        {/* Cars Grid */}
         {agencyCars.length === 0 ? (
           <div className="text-center py-32 bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-[3rem]">
             <div className="bg-white dark:bg-gray-900 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
@@ -102,7 +93,6 @@ export default function AgencyCars() {
             {agencyCars.map(car => (
               <div key={car.id} className="group bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] overflow-hidden hover:border-orange-600/50 transition-all duration-500">
                 <div className="relative h-64 overflow-hidden">
-                  {/* 🔥 تم التعديل هنا ليعرض الرابط الصحيح */}
                   <img 
                     src={getCarImage(car.image)} 
                     alt={car.model} 
@@ -138,7 +128,6 @@ export default function AgencyCars() {
         )}
       </div>
 
-      {/* Delete Modal */}
       {confirmDelete && (
         <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-900 rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl text-center">

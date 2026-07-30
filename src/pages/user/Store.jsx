@@ -35,7 +35,6 @@ export default function Store() {
   const filtered = cars
     .filter(c => {
       const q = search.toLowerCase();
-      // حماية ف حالة كان اسم الوكالة نال
       const agencyName = c.agency_name ? c.agency_name.toLowerCase() : 'AutoDrive';
       
       return (
@@ -224,10 +223,7 @@ export default function Store() {
                     </span>
                   </div>
 
-                  <div className="absolute bottom-6 right-6 flex items-center gap-2 bg-black/60 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10">
-                    <Star size={12} className="text-orange-500" fill="currentColor" />
-                    <span className="text-xs font-black text-white">{car.rating || 4.8}</span>
-                  </div>
+
 
                   {!car.is_available && (
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
@@ -255,7 +251,7 @@ export default function Store() {
                   {/* Tech Specs */}
                   <div className="grid grid-cols-3 gap-3 mb-8">
                     {[
-                      { icon: <Users size={14} />, label: `5 PL` }, // حيت مازال ما زدنا seats ف داتابيز درناها دي فولت
+                      { icon: <Users size={14} />, label: `5 PL` },
                       { icon: <Settings2 size={14} />, label: car.transmission === 'automatic' ? 'AUTO' : 'MANU' },
                       { icon: <Fuel size={14} />, label: car.fuel_type?.slice(0, 3).toUpperCase() || 'ESS' }
                     ].map((spec, i) => (

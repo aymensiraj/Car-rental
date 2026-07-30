@@ -63,7 +63,7 @@ export default function Register() {
           {/* Tabs */}
           <div className="flex bg-slate-100 dark:bg-white/5 rounded-2xl p-1 mb-8 gap-1">
             <button type="button" onClick={() => handleTabChange('user')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              className={`cursor-pointer flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                 tab === 'user'
                   ? 'bg-white dark:bg-orange-600 text-slate-900 dark:text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-600 dark:hover:text-white'
@@ -71,7 +71,7 @@ export default function Register() {
               <User size={14} /> Client
             </button>
             <button type="button" onClick={() => handleTabChange('agency')}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              className={`cursor-pointer flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                 tab === 'agency'
                   ? 'bg-white dark:bg-orange-600 text-slate-900 dark:text-white shadow-md'
                   : 'text-slate-400 hover:text-slate-600 dark:hover:text-white'
@@ -138,7 +138,7 @@ export default function Register() {
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full bg-slate-900 dark:bg-orange-600 hover:bg-orange-700 text-white font-black rounded-2xl py-5 transition-all flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] uppercase text-[11px] tracking-[0.2em] mt-4">
+              className="cursor-pointer w-full bg-slate-900 dark:bg-orange-600 hover:bg-orange-700 text-white font-black rounded-2xl py-5 transition-all flex items-center justify-center gap-3 shadow-xl active:scale-[0.98] uppercase text-[11px] tracking-[0.2em] mt-4">
               {loading
                 ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 : <><UserPlus size={18} />{tab === 'agency' ? 'Soumettre ma demande' : 'Créer mon compte'}</>
