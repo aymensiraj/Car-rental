@@ -58,7 +58,7 @@
 | Couche | Technologies |
 |--------|-------------|
 | **Frontend** | React 18, Tailwind CSS, React Router v6, Axios |
-| **Backend** | Laravel 10, API REST, Laravel Sanctum (JWT) |
+| **Backend** | Laravel 12, API REST, Laravel Sanctum (JWT) |
 | **Base de données** | MySQL |
 | **IA** | Google Gemini API (chatbot) |
 | **Stockage** | Cloudinary (images) |
